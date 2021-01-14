@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "682273275118",
+    "project_id": "pneuma-b1a42",
+    "storage_bucket": "pneuma-b1a42.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682273275118:android:9f382bf35ca1bfbc6247ff",
+        "android_client_info": {
+          "package_name": "com.example.pneuma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682273275118-s9a9acv40h9jdabv6etf9po5bn9cseql.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7e3kjqLeu2hg1Xga2yoHRG22Svbp7Bb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682273275118-s9a9acv40h9jdabv6etf9po5bn9cseql.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
