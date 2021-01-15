@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Pneuma</string>
+    <string name="drawer_open">Drawer open</string>
+    <string name="drawer_closer">Drawer close</string>
 </resources>
