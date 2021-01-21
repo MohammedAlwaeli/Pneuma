@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 //import android.widget.Toolbar;
@@ -34,8 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private RecyclerView postList;
     private Toolbar mToolbar;
+
     private CircleImageView NavProfileImage;
     private TextView NavProfileUsername;
+    private ImageButton AddNewPostButton;
+
     private FirebaseAuth mAuth;
     private DatabaseReference UserRef;
     String currentUserID;
@@ -63,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         mToolbar = (Toolbar)findViewById(R.id.main_page_toolbar);
         //setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Home");
+
+        AddNewPostButton = (ImageButton) findViewById(R.id.add_new_post_button);
 
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawble_layout);
@@ -110,6 +116,19 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        AddNewPostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SendUserToPostActivity();
+            }
+        });
+    }
+
+    private void SendUserToPostActivity() {
+
+        Intent addNewPostIntent  =  new Intent(MainActivity.this, PostActivity.class);
+        startActivity(addNewPostIntent);
     }
 
 
@@ -175,6 +194,10 @@ public class MainActivity extends AppCompatActivity {
     //this fucntion will allow the user to navigate through home, profile ...after clicking on it
     private void UserMenuSelector(MenuItem item) {
         switch (item.getItemId()){
+
+            case R.id.nav_post:
+                SendUserToPostActivity();
+                break;
 
             case R.id.nav_profile:
                 Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show();
