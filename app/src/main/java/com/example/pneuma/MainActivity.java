@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
             currentUserID = mAuth.getCurrentUser().getUid();
         }
-        UserRef = FirebaseDatabase.getInstance("https://pneuma-b1a42-default-rtdb.firebaseio.com/").getReference().child("Users"); //it was the biggest error until I put the link for the database
+        UserRef = FirebaseDatabase.getInstance("https://pneuma-b1a42-default-rtdb.firebaseio.com/").getReference().child("Users");
 
         //add the toolbar to the main activity hamburger
         mToolbar = (Toolbar)findViewById(R.id.main_page_toolbar);
