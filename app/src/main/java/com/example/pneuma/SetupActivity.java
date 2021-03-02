@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -198,6 +199,7 @@ public class SetupActivity extends AppCompatActivity {
         String username = UserName.getText().toString();
         String fullname = FullName.getText().toString();
         String country = CountryName.getText().toString();
+        Uri pic = imageUri;
 
         if(TextUtils.isEmpty(username)){
             Toast.makeText(this, "please write your username", Toast.LENGTH_SHORT).show();
