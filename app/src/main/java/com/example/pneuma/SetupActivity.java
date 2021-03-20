@@ -17,6 +17,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+//import com.google.auth.oauth2.GoogleCredentials;
+
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.FirebaseOptions;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -37,7 +43,7 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SetupActivity extends AppCompatActivity {
-
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private EditText UserName, FullName, CountryName;
     private Button SaveInformationName;
     private CircleImageView ProfileImage;
@@ -216,7 +222,37 @@ public class SetupActivity extends AppCompatActivity {
             loadingBar.setMessage("Please wait, while we are creating your new Account...");
             loadingBar.show();
             loadingBar.setCanceledOnTouchOutside(true);
+            HashMap<String, Object> userMap = new HashMap<>();
+            userMap.put("username", username);
+            userMap.put("fullname", fullname);
+            userMap.put("country" ,country);
+            userMap.put("status", "Hey there, I am using Pneuma app dev by Mohammed");
+            userMap.put("gender", "None");
+            userMap.put("DOB", "None");
+            userMap.put("relatoinshipStatus","None" );
+            userMap.put("url", "None");
 
+// Add a new document with a generated ID
+            db.collection("users").document(currentUserID).set(userMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void avoid) {
+                            SendUserToMainActivity();
+                            Toast.makeText(SetupActivity.this, "Your account is created Succussfully.",Toast.LENGTH_LONG).show();
+                            loadingBar.dismiss();
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            String message  = e.getMessage();
+                            Toast.makeText(SetupActivity.this, "Error Occured: "+message, Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+
+                        }
+                    });
+/*
             HashMap userMap = new HashMap();
 
             userMap.put("username", username);
@@ -226,6 +262,9 @@ public class SetupActivity extends AppCompatActivity {
             userMap.put("gender", "None");
             userMap.put("DOB", "None");
             userMap.put("relatoinshipStatus","None" );
+            userMap.put("url", "None");
+
+
 
             UserRef.updateChildren(userMap).addOnCompleteListener(new OnCompleteListener() {
                 @Override
@@ -241,7 +280,7 @@ public class SetupActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                     }
                 }
-            });
+            });*/
         }
 
     }

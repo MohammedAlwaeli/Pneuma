@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 //import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +29,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -54,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
 
@@ -85,6 +90,26 @@ public class MainActivity extends AppCompatActivity {
         //displaying the username in the navigation bar
         NavProfileUsername = (TextView)navView.findViewById(R.id. nav_user_full_name);
         if (currentUserID!= null) {
+            DocumentReference docRef = db.collection("users").document(currentUserID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+
+                        if (document.exists()) {
+                           String name = document.get("fullname").toString();
+                            NavProfileUsername.setText(name);
+                         //   Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        } else {
+                         //   Log.d(TAG, "No such document");
+                        }
+                    } else {
+                     //   Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+            /*
             UserRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -103,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
-            });
+            });*/
         }
 
 
@@ -141,16 +166,16 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentUser==null){
             SendUserTologinActivity();
-        }
+        }/*
         else {
             chechUserExistance();
-        }
+        }*/
     }
 
     //method to check if the user after login, if the user exist in the database, send the
     // user to login page, otherwise send the user to setting page to enter his info
     private void chechUserExistance() {
-        final String Current_user_id = mAuth.getCurrentUser().getUid();
+     /*   final String Current_user_id = mAuth.getCurrentUser().getUid();
         UserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -164,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
     }
 

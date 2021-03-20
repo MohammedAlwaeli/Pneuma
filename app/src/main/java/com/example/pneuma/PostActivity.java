@@ -3,7 +3,7 @@ package com.example.pneuma;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.google.firebase.storage.UploadTask;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,9 +16,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -68,7 +70,9 @@ public class PostActivity extends AppCompatActivity {
         UpdatePostButton = (Button)findViewById(R.id.update_post_button);
         PostDescription = (EditText)findViewById(R.id.post_description);
         loadingBar = new ProgressDialog(this);
-
+      //  final StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(
+        //        "https://firebasestorage.googleapis.com/v0/b/pneuma-b1a42.appspot.com/o/Post%20Images%2F918-March-202118%3A57.jpg?alt=media&token=cb35a211-93e7-473c-8453-cd7a002abff2");
+        //storageRef.getDownloadUrl()
         SelectPostImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,26 +120,57 @@ public class PostActivity extends AppCompatActivity {
         saveCurrentTime = currentTime.format(calForDate.getTime());
 
         postRendomName = saveCurrentDate+saveCurrentTime;
+        String imagename = ImageUri.getLastPathSegment()+postRendomName+".jpg";
+        final StorageReference filePath = PostImageReference.child("Post Images").child(imagename);
+        UploadTask uploadTask = filePath.putFile(ImageUri);
 
-        StorageReference filePath = PostImageReference.child("Post Images").child(ImageUri.getLastPathSegment()+postRendomName+".jpg");
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
 
-        filePath.putFile(ImageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                // Continue with the task to get the download URL
+                return filePath.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+
+                    Uri downloadUri = task.getResult();
+                    usersRef.child(current_user_id).child("url").setValue(downloadUri.toString());
+
+                    Toast.makeText(PostActivity.this, "image uploaded successfully", Toast.LENGTH_SHORT).show();
+                    SavingPostInformationToDatabase();
+                } else {
+                    String message = task.getException().getMessage();
+                    Toast.makeText(PostActivity.this, "Eroor occured"+message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+      /*  filePath.putFile(ImageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if(task.isSuccessful()){
                     downloadUrl = task.getResult().toString();
                     Toast.makeText(PostActivity.this, "image uploaded successfully", Toast.LENGTH_SHORT).show();
                     SavingPostInformationToDatabase();
+
+                   String cool = filePath.getDownloadUrl().toString();
+
+                   int john = 2+2;
                 }
                 else {
                     String message = task.getException().getMessage();
                     Toast.makeText(PostActivity.this, "Eroor occured"+message, Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        });*/
     }
 
     private void SavingPostInformationToDatabase() {
+
         usersRef.child(current_user_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -170,6 +205,7 @@ public class PostActivity extends AppCompatActivity {
                             });
 
                 }
+
             }
 
             @Override
