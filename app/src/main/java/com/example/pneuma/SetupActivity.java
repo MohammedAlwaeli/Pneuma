@@ -311,6 +311,7 @@ public class SetupActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
 
                     Uri downloadUri = task.getResult();
+                    //update info
                     db.collection("users").document(currentUserID).update("profile_url", downloadUri.toString());
                     SendUserToMainActivity();
                   //  usersRef.child(current_user_id).child("url").setValue(downloadUri.toString());
