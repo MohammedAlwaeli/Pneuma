@@ -15,11 +15,15 @@ import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 //import android.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +36,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -85,21 +91,29 @@ public class MainActivity extends AppCompatActivity {
         navigationView = (NavigationView)findViewById(R.id.navigation_view);
 
         View navView = navigationView.inflateHeaderView(R.layout.navigation_header); //storing the navigation_header page in the layout in navView
-        //NavProfileImage = (CircleImageView) navView.findViewById(R.id.nav_profile_image);
+        NavProfileImage = (CircleImageView) navView.findViewById(R.id.nav_profile_image);
 
         //displaying the username in the navigation bar
         NavProfileUsername = (TextView)navView.findViewById(R.id. nav_user_full_name);
         if (currentUserID!= null) {
+
+            //get the reference for the current user
             DocumentReference docRef = db.collection("users").document(currentUserID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-
+//check if user info exists
                         if (document.exists()) {
                            String name = document.get("fullname").toString();
                             NavProfileUsername.setText(name);
+
+//load users profile image using glide
+                                Glide.with(MainActivity.this)
+                                        .load(document.get("profile_url").toString())
+                                        .into(NavProfileImage);
+
                          //   Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         } else {
                          //   Log.d(TAG, "No such document");

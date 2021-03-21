@@ -28,11 +28,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <ImageView
-                android:id="@+id/main_post"
-                android:layout_width="313dp"
-                android:layout_height="190dp"
-                app:srcCompat="@drawable/add_post_high" />
         </FrameLayout>
 
 

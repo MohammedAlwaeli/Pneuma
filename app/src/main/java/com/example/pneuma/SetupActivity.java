@@ -20,6 +20,7 @@ import android.widget.Toast;
 //import com.google.auth.oauth2.GoogleCredentials;
 
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.FirebaseOptions;
@@ -38,6 +39,8 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -56,7 +59,7 @@ public class SetupActivity extends AppCompatActivity {
     private ImageView image;
     private Uri imageUri;
 
-
+    private StorageReference PostImageReference;
     String currentUserID;
     final static int Gallery_pick = 1;
     private StorageReference UserProfileImageRef;
@@ -66,7 +69,7 @@ public class SetupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
-
+        PostImageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
         UserRef = FirebaseDatabase.getInstance("https://pneuma-b1a42-default-rtdb.firebaseio.com/").getReference().child("Users").child(currentUserID); //it was the biggest error until I put the link for the database
@@ -216,6 +219,9 @@ public class SetupActivity extends AppCompatActivity {
         if(TextUtils.isEmpty(country)){
             Toast.makeText(this, "please write your country", Toast.LENGTH_SHORT).show();
         }
+        if(imageUri==null){
+            Toast.makeText(this, "Please select a profile image...", Toast.LENGTH_SHORT).show();
+        }
         else {
 
             loadingBar.setTitle("Saving Information");
@@ -226,20 +232,19 @@ public class SetupActivity extends AppCompatActivity {
             userMap.put("username", username);
             userMap.put("fullname", fullname);
             userMap.put("country" ,country);
-            userMap.put("status", "Hey there, I am using Pneuma app dev by Mohammed");
             userMap.put("gender", "None");
             userMap.put("DOB", "None");
-            userMap.put("relatoinshipStatus","None" );
-            userMap.put("url", "None");
+            userMap.put("profile_url", "None");
 
 // Add a new document with a generated ID
             db.collection("users").document(currentUserID).set(userMap)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void avoid) {
-                            SendUserToMainActivity();
+
                             Toast.makeText(SetupActivity.this, "Your account is created Succussfully.",Toast.LENGTH_LONG).show();
                             loadingBar.dismiss();
+                            StoringImageToFirebaseStorage(pic);
 
                         }
                     })
@@ -284,7 +289,41 @@ public class SetupActivity extends AppCompatActivity {
         }
 
     }
+    private void StoringImageToFirebaseStorage(Uri pic) {
 
+
+        String imagename = pic.getLastPathSegment() + currentUserID + ".jpg";
+        final StorageReference filePath = PostImageReference.child("Profile").child(imagename);
+        UploadTask uploadTask = filePath.putFile(pic);
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                // Continue with the task to get the download URL
+                return filePath.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+
+                    Uri downloadUri = task.getResult();
+                    db.collection("users").document(currentUserID).update("profile_url", downloadUri.toString());
+                    SendUserToMainActivity();
+                  //  usersRef.child(current_user_id).child("url").setValue(downloadUri.toString());
+
+                   // Toast.makeText(PostActivity.this, "image uploaded successfully", Toast.LENGTH_SHORT).show();
+                 //   SavingPostInformationToDatabase();
+                } else {
+                    String message = task.getException().getMessage();
+                  //  Toast.makeText(PostActivity.this, "Eroor occured" + message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
     private void SendUserToMainActivity() {
 
         Intent mainIntent = new Intent(SetupActivity.this, MainActivity.class);
