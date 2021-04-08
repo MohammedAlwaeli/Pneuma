@@ -47,7 +47,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SetupActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private EditText UserName, FullName, CountryName;
+    private EditText UserName, FullName, CountryName, bio_;
     private Button SaveInformationName;
     private CircleImageView ProfileImage;
     private ProgressDialog loadingBar;
@@ -78,6 +78,7 @@ public class SetupActivity extends AppCompatActivity {
         UserName = (EditText)findViewById(R.id.setup_user_name);
         FullName = (EditText)findViewById(R.id.setup_full_name);
         CountryName = (EditText)findViewById(R.id.setup_country_name);
+        bio_ = (EditText)findViewById(R.id.setup_Bio);
         SaveInformationName = (Button)findViewById(R.id.setup_information_button);
         ProfileImage = (CircleImageView)findViewById(R.id.setup_profile_image);
         loadingBar = new ProgressDialog(this);
@@ -208,6 +209,7 @@ public class SetupActivity extends AppCompatActivity {
         String username = UserName.getText().toString();
         String fullname = FullName.getText().toString();
         String country = CountryName.getText().toString();
+        String biog = bio_.getText().toString();
         Uri pic = imageUri;
 
         if(TextUtils.isEmpty(username)){
@@ -235,6 +237,7 @@ public class SetupActivity extends AppCompatActivity {
             userMap.put("gender", "None");
             userMap.put("DOB", "None");
             userMap.put("profile_url", "None");
+            userMap.put("bio", biog);
 
 // Add a new document with a generated ID
             db.collection("users").document(currentUserID).set(userMap)

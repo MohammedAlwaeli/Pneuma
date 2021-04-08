@@ -171,6 +171,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(addNewPostIntent);
     }
 
+    private void SendUserToProfileActivity() {
+
+        Intent addNewProfileIntent  = new Intent(MainActivity.this, ProfileActivity.class);
+        startActivity(addNewProfileIntent);
+    }
 
     //method to check the user Authentication or register in the app
     @Override
@@ -240,7 +245,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_profile:
+
                 Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show();
+                SendUserToProfileActivity();
                 break;
 
             case R.id.nav_home:
