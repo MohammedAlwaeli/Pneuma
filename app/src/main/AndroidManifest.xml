@@ -14,11 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pneuma">
         <activity android:name=".QuestionActivity"></activity>
+        <activity android:name=".ChatActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".PostActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".SetupActivity" />
         <activity android:name=".loginActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

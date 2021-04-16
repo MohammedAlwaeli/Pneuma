@@ -44,7 +44,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private DatabaseReference UserRef;
+
     String currentUserID;
     private CircleImageView ProfileImage;
     private TextView ProfileUsername;
@@ -63,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             currentUserID = mAuth.getCurrentUser().getUid();
         }
-        UserRef = FirebaseDatabase.getInstance("https://pneuma-b1a42-default-rtdb.firebaseio.com/").getReference().child("Users");
+
         ProfileImage = (CircleImageView) findViewById(R.id.profile_image);
 
         //displaying the username in the navigation bar
