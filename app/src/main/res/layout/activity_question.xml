@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".QuestionActivity">
+
+
+    <TextView
+        android:id="@+id/question"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginBottom="156dp"
+        android:padding="8dp"
+        android:text="Question"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/choice1"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <Button
+        android:id="@+id/choice1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:background="#0091EA"
+        android:padding="8dp"
+        android:text="option1"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toTopOf="@+id/choice2"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <Button
+        android:id="@+id/choice2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="416dp"
+        android:layout_marginBottom="40dp"
+        android:background="#0091EA"
+        android:padding="8dp"
+        android:text="option2"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toTopOf="@+id/choice3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.535"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <Button
+        android:id="@+id/choice3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+
+        android:layout_marginBottom="188dp"
+        android:background="#0091EA"
+        android:padding="8dp"
+        android:text="option3"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

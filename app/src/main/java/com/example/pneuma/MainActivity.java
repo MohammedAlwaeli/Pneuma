@@ -176,6 +176,11 @@ public class MainActivity extends AppCompatActivity {
         Intent addNewProfileIntent  = new Intent(MainActivity.this, ProfileActivity.class);
         startActivity(addNewProfileIntent);
     }
+    private void SendUserToQuestionActivity() {
+
+        Intent addNewProfileIntent  = new Intent(MainActivity.this, QuestionActivity.class);
+        startActivity(addNewProfileIntent);
+    }
 
     //method to check the user Authentication or register in the app
     @Override
@@ -277,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.nav_personality:
                 Toast.makeText(this, "Personality", Toast.LENGTH_SHORT).show();
+                SendUserToQuestionActivity();
                 break;
         }
     }
