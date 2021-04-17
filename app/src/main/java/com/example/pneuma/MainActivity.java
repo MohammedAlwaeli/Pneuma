@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 //import android.widget.Toolbar;
@@ -28,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.protobuf.NullValue;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -46,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference UserRef;
     String currentUserID;
 
-
+    private ImageView postImage;
+    private TextView postDes;
 
 
 
@@ -82,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
 
         View navView = navigationView.inflateHeaderView(R.layout.navigation_header); //storing the navigation_header page in the layout in navView
         NavProfileImage = (CircleImageView) navView.findViewById(R.id.nav_profile_image);
+        postImage = (ImageView)findViewById(R.id.post_view);
+        postDes = (TextView)findViewById(R.id.post_text);
 
         //displaying the username in the navigation bar
         NavProfileUsername = (TextView)navView.findViewById(R.id. nav_user_full_name);
@@ -103,7 +108,17 @@ public class MainActivity extends AppCompatActivity {
                                 Glide.with(MainActivity.this)
                                         .load(document.get("profile_url").toString())
                                         .into(NavProfileImage);
+                            try{
+                                postDes.setText(document.get("description").toString());
+                                Glide.with(MainActivity.this)
+                                        .load(document.get("postimage").toString())
+                                        .into(postImage);
+                                postImage.setVisibility(View.VISIBLE);
 
+                            }catch(Exception e)
+                            {
+                                postImage.setVisibility(View.INVISIBLE);
+                            }
                          //   Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         } else {
                          //   Log.d(TAG, "No such document");

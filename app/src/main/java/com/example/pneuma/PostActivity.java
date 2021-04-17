@@ -3,6 +3,10 @@ package com.example.pneuma;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.UploadTask;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -46,11 +50,11 @@ public class PostActivity extends AppCompatActivity {
     private static final int Gallery_pick =1;
     private Uri ImageUri;
     private String Description;
-
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private StorageReference PostImageReference;
-    private DatabaseReference usersRef, PostRef;
+    private DocumentReference usersRef, PostRef;
     private FirebaseAuth mAuth;
-
+    private String url;
 
     private String saveCurrentDate, saveCurrentTime, postRendomName, downloadUrl, current_user_id;
 
@@ -63,8 +67,8 @@ public class PostActivity extends AppCompatActivity {
         current_user_id = mAuth.getCurrentUser().getUid();
 
         PostImageReference = FirebaseStorage.getInstance().getReference();
-        usersRef = FirebaseDatabase.getInstance("https://pneuma-b1a42-default-rtdb.firebaseio.com/").getReference().child("Users");
-        PostRef = FirebaseDatabase.getInstance("https://pneuma-b1a42-default-rtdb.firebaseio.com/").getReference().child("Posts");
+        usersRef = db.collection("users").document(current_user_id);
+
 
         SelectPostImage = (ImageButton)findViewById(R.id.select_post_image);
         UpdatePostButton = (Button)findViewById(R.id.update_post_button);
@@ -139,7 +143,7 @@ public class PostActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
 
                     Uri downloadUri = task.getResult();
-                    usersRef.child(current_user_id).child("url").setValue(downloadUri.toString());
+                    url = downloadUri.toString();
 
                     Toast.makeText(PostActivity.this, "image uploaded successfully", Toast.LENGTH_SHORT).show();
                     SavingPostInformationToDatabase();
@@ -171,49 +175,37 @@ public class PostActivity extends AppCompatActivity {
 
     private void SavingPostInformationToDatabase() {
 
-        usersRef.child(current_user_id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    //getting the user name and profile from the database
-                    String userFullName = dataSnapshot.child("fullname").getValue().toString();
-                    String userProfileImage =dataSnapshot.child("profileimage").getValue().toString();
-                    HashMap postsMap = new HashMap();
-                    postsMap.put("uid,", current_user_id);
-                    postsMap.put("data,", saveCurrentDate);
-                    postsMap.put("time,", saveCurrentTime);
-                    postsMap.put("description,", Description);
-                    postsMap.put("postimage,", downloadUrl);
-                    postsMap.put("profileimage,", userProfileImage);
-                    postsMap.put("fullname,", userFullName);
 
-                    //save it to the firebase
-                    PostRef.child(current_user_id + postRendomName).updateChildren(postsMap)
-                            .addOnCompleteListener(new OnCompleteListener() {
-                                @Override
-                                public void onComplete(@NonNull Task task) {
-                                    if(task.isSuccessful()){
-                                        SendUserToMainActivity();
-                                        Toast.makeText(PostActivity.this, "New post is updated successfully...", Toast.LENGTH_SHORT).show();
-                                        loadingBar.dismiss();
-                                    }
-                                    else {
-                                        Toast.makeText(PostActivity.this, "Error Occured while updating your post... ", Toast.LENGTH_SHORT).show();
-                                        loadingBar.dismiss();
-                                    }
-                                }
-                            });
+        HashMap postsMap = new HashMap();
+        postsMap.put("description", Description);
+        postsMap.put("postimage", url);
 
-                }
+        db.collection("users").document(current_user_id).update(postsMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void avoid) {
 
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                        loadingBar.dismiss();
+                        SendUserToMainActivity();
 
-            }
-        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        String message = e.getMessage();
+                        Toast.makeText(PostActivity.this, "Error Occured: " + message, Toast.LENGTH_SHORT).show();
+                        loadingBar.dismiss();
+
+                    }
+                });
+
+
     }
+
+
+
 
     private void OpenGallary() {
         Intent gallaryIntent = new Intent();
@@ -224,11 +216,9 @@ public class PostActivity extends AppCompatActivity {
 
     private void SendUserToMainActivity() {
 
+
         Intent mainIntent = new Intent(PostActivity.this, MainActivity.class);
-        //let's prevent the user from going back to the logout activity after the user login, in case the user clicked on back button
-        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
-        finish();
     }
 
     @Override

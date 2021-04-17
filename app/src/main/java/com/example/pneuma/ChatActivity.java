@@ -2,6 +2,7 @@ package com.example.pneuma;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -80,6 +81,16 @@ public class ChatActivity extends AppCompatActivity
                                                                                Glide.with(ChatActivity.this)
                                                                                        .load(document.get("profile_url").toString())
                                                                                        .into(match_1);
+                                                                               match_1.setOnClickListener(new View.OnClickListener(){
+                                                                                   @Override
+                                                                                   public void onClick(View view){
+                                                                                       //My logic for Button goes in here
+
+
+
+
+                                                                                   }
+                                                                               });
                                                                            }
                                                                        }
                                                                    }
